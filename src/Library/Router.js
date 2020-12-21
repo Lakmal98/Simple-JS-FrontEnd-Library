@@ -1,8 +1,5 @@
 export default class Router {
     constructor() {
-        // this.preRoutes = [
-        //     '/', '/login', '/signup', '/reset-password', '/add-new-property', '/profile', '/settings'
-        // ]
         this.routes = []
     }
 
@@ -39,7 +36,6 @@ export default class Router {
     getRoute() {}
 
     init() {
-        this.routerFound = false
         this.routes.some(route => {
             let regEx = new RegExp(`^${route.uri}$`) // i'll explain this conversion to regular expression below
             let regEx2 = new RegExp(`^${route.uri}\/\w*`) // i'll explain this conversion to regular expression below
@@ -48,17 +44,14 @@ export default class Router {
             if (path.match(regEx)) {
                 // our route logic is true, return the corresponding callback
                 let req = { path } // i'll also explain this code below
-                this.routerFound = true
                 return route.callback.call(this, req)
             } else if (path.match(regEx2)) {
                 let req = { path } // i'll also explain this code below
-                this.routerFound = true
                 return route.callback.call(this, req)
-            } else this.routerFound = false
+            } else
+                dispatchEvent(
+                    new CustomEvent('customError', { detail: { err: '404' } })
+                )
         })
-        if (!this.routerFound)
-            dispatchEvent(
-                new CustomEvent('customError', { detail: { err: '404' } })
-            )
     }
 }
